@@ -6,6 +6,7 @@
 ## 공통
 
 - 서브에이전트는 커밋하지 않는다. 메인이 검증 후 커밋한다.
+- 테스트를 먼저 쓰고 실행해서 실패를 확인한다. **보고에 실패 출력의 마지막 3줄을 원문 그대로 붙인다.** 없으면 메인은 그 배치를 통과시키지 않는다(수정 요청 재작업에도 적용).
 - 맡은 배치의 허용 파일 밖은 수정하지 않는다.
 - 모든 테스트 파일 맨 위에 `import { test, expect, vi, describe, beforeEach } from 'vitest'`처럼 쓰는 것만 import한다(전역 없음).
 - `verbatimModuleSyntax`: 타입은 `import type`, 섞을 때는 `import { buildSequence, type Step }`.
