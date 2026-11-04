@@ -2,6 +2,7 @@
 import { useAppStore } from './app/store'
 import BottomNav from './components/BottomNav.vue'
 import AppToast from './components/AppToast.vue'
+import InstallHint from './components/InstallHint.vue'
 import ListView from './views/ListView.vue'
 import ReadyView from './views/ReadyView.vue'
 import EditView from './views/EditView.vue'
@@ -20,6 +21,7 @@ const store = useAppStore()
     <RunView v-else-if="store.state.view === 'run'" />
     <BottomNav v-if="store.state.view === 'list' || store.state.view === 'settings'" />
     <AppToast />
+    <InstallHint v-if="store.state.view !== 'run'" />
   </div>
 </template>
 

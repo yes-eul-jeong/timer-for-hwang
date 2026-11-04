@@ -19,6 +19,7 @@ export interface AppStore {
     toast: string | null
     volatile: boolean
     lastBackupAt: string | null
+    installHintSeen: boolean
   }
   init(deps?: { repo?: TimerRepo; prefs?: Prefs; now?: () => Date }): Promise<void>
   go(view: 'list' | 'settings'): void
@@ -33,6 +34,7 @@ export interface AppStore {
   importBackup(data: BackupFile, mode: 'replace' | 'merge'): Promise<void>
   markBackedUp(now: Date): void
   showToast(msg: string): void
+  dismissInstallHint(): void
 }
 
 function initialState(): AppStore['state'] {
@@ -46,6 +48,7 @@ function initialState(): AppStore['state'] {
     toast: null,
     volatile: false,
     lastBackupAt: null,
+    installHintSeen: false,
   }
 }
 
@@ -96,6 +99,7 @@ const store: AppStore = {
     state.timers = await loadTimersWithSeed(repo, prefs, now)
     state.settings = prefs.getSettings()
     state.lastBackupAt = prefs.getLastBackupAt()
+    state.installHintSeen = prefs.getFlag('installHintSeen')
     state.volatile = repo.volatile === true
     state.view = 'list'
   },
@@ -167,6 +171,10 @@ const store: AppStore = {
     prefs?.setLastBackupAt(iso)
   },
   showToast,
+  dismissInstallHint() {
+    state.installHintSeen = true
+    prefs?.setFlag('installHintSeen', true)
+  },
 }
 
 export function useAppStore(): AppStore {

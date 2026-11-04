@@ -14,7 +14,7 @@ export default defineConfig({
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg'],
+      includeAssets: ['icon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png'],
       manifest: {
         name: '땡',
         short_name: '땡',
@@ -26,8 +26,11 @@ export default defineConfig({
         orientation: 'portrait',
         background_color: '#0A0A0A',
         theme_color: '#0A0A0A',
-        // 임시 아이콘. 아이콘 디자인이 정해지면 PNG(192, 512, maskable)로 바꾼다
-        icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml' }],
+        icons: [
+          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
       },
       workbox: {
         // 음성 파일과 글꼴까지 전부 미리 캐시해서 오프라인에서도 동작하게 한다
