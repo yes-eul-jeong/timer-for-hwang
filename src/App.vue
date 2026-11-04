@@ -20,7 +20,7 @@
   padding: var(--s-6) var(--gutter);
 }
 .boot__label {
-  font-family: var(--font-sans);
+  font-family: var(--font-num);
   font-size: var(--fs-label);
   font-weight: 700;
   letter-spacing: var(--tr-widest);

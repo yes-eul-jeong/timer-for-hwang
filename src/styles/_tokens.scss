@@ -21,9 +21,10 @@ $color: (
 );
 
 // ── 타이포 ──────────────────────────────────
-// 숫자와 영문은 sans, 한글은 kr. 글꼴 파일은 앱에 직접 넣는다(오프라인 동작).
+// 숫자와 영문 라벨은 num(Barlow Condensed), 한글은 kr(Pretendard).
+// 글꼴 파일은 앱에 직접 넣는다(오프라인 동작). 소개 페이지의 Satoshi 는 쓰지 않는다.
 $font: (
-  sans: (Satoshi, Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif),
+  num:  ("Barlow Condensed", "Arial Narrow", -apple-system, system-ui, sans-serif),
   kr:   (Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif),
 );
 
@@ -65,7 +66,7 @@ $ease: (out: cubic-bezier(.22, .8, .24, 1));
 
 :root {
   @each $k, $v in $color { --c-#{$k}: #{$v}; }
-  --font-sans: #{map.get($font, sans)};
+  --font-num: #{map.get($font, num)};
   --font-kr: #{map.get($font, kr)};
   @each $k, $v in $font-size { --fs-#{$k}: #{$v}; }
   @each $k, $v in $tracking { --tr-#{$k}: #{$v}; }
