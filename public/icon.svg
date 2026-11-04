@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0A0A0A"/>
+  <rect x="56" y="56" width="400" height="400" fill="#00FF85"/>
+  <text x="256" y="340" text-anchor="middle" font-family="Apple SD Gothic Neo, sans-serif" font-weight="900" font-size="240" fill="#000">땡</text>
+</svg>

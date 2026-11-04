@@ -1,0 +1,76 @@
+// ─────────────────────────────────────────────
+//  디자인 토큰
+//  황승하 선수 소개 페이지(09. gallery/site/src/styles/_tokens.scss)에서
+//  이 앱에 필요한 값만 옮겼다. 값을 직접 쓰지 않고 전부 여기를 거친다.
+// ─────────────────────────────────────────────
+
+// ── 색 ──────────────────────────────────────
+// 대비는 배경 #0A0A0A 기준 (소개 페이지에서 검증한 값)
+//   흰색 19.8:1 / 보조 6.1:1 / 액센트 14.7:1
+$color: (
+  bg:          #0A0A0A,   // 페이지 배경, 휴식 단계
+  surface:     #101014,   // 카드
+  surface-2:   #16161C,   // 카드 위 한 단계, 준비 단계
+  fg:          #FFFFFF,
+  muted:       #8E8E96,
+  dim:         #5C5C63,   // 큰 글자에만
+  line:        #1B1B21,
+  line-2:      #2C2C33,
+  accent:      #00FF85,   // 운동 단계
+  on-accent:   #000000,
+);
+
+// ── 타이포 ──────────────────────────────────
+// 숫자와 영문은 sans, 한글은 kr. 글꼴 파일은 앱에 직접 넣는다(오프라인 동작).
+$font: (
+  sans: (Satoshi, Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif),
+  kr:   (Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif),
+);
+
+$font-size: (
+  body:  15px,
+  small: 13px,
+  label: 10px,
+);
+
+$tracking: (
+  tight:  -.05em,   // 큰 숫자
+  snug:   -.03em,
+  widest: .24em,    // 영문 라벨
+);
+
+// ── 간격 ────────────────────────────────────
+$space: (
+  0: 0,
+  1: 4px,
+  2: 8px,
+  3: 12px,
+  4: 16px,
+  5: 22px,
+  6: 28px,
+  7: 38px,
+  8: 54px,
+);
+
+// ── 모션 ────────────────────────────────────
+$duration: (fast: .2s, base: .32s);
+$ease: (out: cubic-bezier(.22, .8, .24, 1));
+
+// 각진 UI. 모서리 둥글기는 쓰지 않는다.
+
+// ─────────────────────────────────────────────
+//  CSS 변수로 내보낸다
+// ─────────────────────────────────────────────
+@use 'sass:map';
+
+:root {
+  @each $k, $v in $color { --c-#{$k}: #{$v}; }
+  --font-sans: #{map.get($font, sans)};
+  --font-kr: #{map.get($font, kr)};
+  @each $k, $v in $font-size { --fs-#{$k}: #{$v}; }
+  @each $k, $v in $tracking { --tr-#{$k}: #{$v}; }
+  @each $k, $v in $space { --s-#{$k}: #{$v}; }
+  @each $k, $v in $duration { --d-#{$k}: #{$v}; }
+  @each $k, $v in $ease { --e-#{$k}: #{$v}; }
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+}
