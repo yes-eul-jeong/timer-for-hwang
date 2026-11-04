@@ -1,7 +1,8 @@
-import { test, expect, describe, beforeEach } from 'vitest'
+import { test, expect, describe, beforeEach, vi } from 'vitest'
 import { IDBFactory } from 'fake-indexeddb'
 import { openTimerRepo, loadTimersWithSeed, createMemoryRepo, newId } from './db'
 import { createPrefs } from './prefs'
+import { PRESET_TIMERS } from '../core/presets'
 import type { Timer } from '../core/types'
 
 function mk(id: string, createdAt: string): Timer {
@@ -79,6 +80,25 @@ describe('loadTimersWithSeed', () => {
     expect(prefs.getFlag('seeded')).toBe(true)
     await repo.replaceAll([])
     expect(await loadTimersWithSeed(repo, prefs, now)).toHaveLength(0)
+  })
+  test('seeded presets keep PRESET_TIMERS order', async () => {
+    // 첫 호출이 가장 큰 id를 받도록 역순 UUID를 돌려준다. createdAt이 같으면 id 정렬로 순서가 뒤집힌다.
+    const n = PRESET_TIMERS.length
+    let call = 0
+    const spy = vi.spyOn(crypto, 'randomUUID').mockImplementation(() => {
+      const prefix = String.fromCharCode('a'.charCodeAt(0) + (n - 1 - call++))
+      return `${prefix}0000000-0000-4000-8000-000000000000` as `${string}-${string}-${string}-${string}-${string}`
+    })
+    try {
+      const repo = await openTimerRepo()
+      const prefs = createPrefs(memStorage())
+      const list = await loadTimersWithSeed(repo, prefs, () => new Date('2026-11-04T00:00:00.000Z'))
+      expect(list.map((t) => t.name)).toEqual(PRESET_TIMERS.map((p) => p.name))
+      const times = list.map((t) => Date.parse(t.createdAt))
+      for (let i = 1; i < times.length; i++) expect(times[i]!).toBeGreaterThan(times[i - 1]!)
+    } finally {
+      spy.mockRestore()
+    }
   })
 })
 
