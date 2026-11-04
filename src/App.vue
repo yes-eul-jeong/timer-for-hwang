@@ -1,40 +1,35 @@
 <script setup lang="ts">
-// 프로젝트 세팅 확인용 화면. 실제 화면은 구현 계획에 따라 교체한다.
+import { useAppStore } from './app/store'
+import BottomNav from './components/BottomNav.vue'
+import AppToast from './components/AppToast.vue'
+import ListView from './views/ListView.vue'
+import ReadyView from './views/ReadyView.vue'
+import EditView from './views/EditView.vue'
+import SettingsView from './views/SettingsView.vue'
+import RunView from './views/RunView.vue'
+
+const store = useAppStore()
 </script>
 
 <template>
-  <main class="boot">
-    <span class="boot__label">TTAENG · INTERVAL TIMER</span>
-    <h1 class="boot__title">땡</h1>
-    <p class="boot__note">프로젝트 세팅 완료</p>
-  </main>
+  <div class="app">
+    <ListView v-if="store.state.view === 'list'" />
+    <ReadyView v-else-if="store.state.view === 'ready'" />
+    <EditView v-else-if="store.state.view === 'edit'" />
+    <SettingsView v-else-if="store.state.view === 'settings'" />
+    <RunView v-else-if="store.state.view === 'run'" />
+    <BottomNav v-if="store.state.view === 'list' || store.state.view === 'settings'" />
+    <AppToast />
+  </div>
 </template>
 
 <style scoped lang="scss">
-.boot {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--s-3);
-  padding: var(--s-6) var(--gutter);
-}
-.boot__label {
-  font-family: var(--font-num);
-  font-size: var(--fs-label);
-  font-weight: 700;
-  letter-spacing: var(--tr-widest);
-  color: var(--c-accent);
-}
-.boot__title {
-  margin: 0;
-  font-size: 40vw;
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: var(--tr-tight);
-}
-.boot__note {
-  margin: 0;
-  color: var(--c-muted);
+.app {
+  container-type: size;
+  height: 100dvh;
+  position: relative;
+  overflow: hidden;
+  background: var(--c-bg);
+  color: var(--c-fg);
 }
 </style>
