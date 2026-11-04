@@ -5,3 +5,8 @@ declare module '*.vue' {
   const component: DefineComponent<object, object, unknown>
   export default component
 }
+
+interface Navigator {
+  audioSession?: { type: string }
+  standalone?: boolean
+}
