@@ -10,3 +10,5 @@ interface Navigator {
   audioSession?: { type: string }
   standalone?: boolean
 }
+
+declare const __APP_VERSION__: string
