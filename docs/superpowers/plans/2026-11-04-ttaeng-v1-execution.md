@@ -26,12 +26,12 @@
 9. `main.ts`의 `store.init()` + `requestPersist()`는 Task 6에서 한다: `useAppStore().init().finally(() => { createApp(App).mount('#app'); void requestPersist() })`.
 10. ReadyView 시작 핸들러는 Task 6에서 처음부터 `void getAudioPlayer().unlock(); store.startRun()`. 테스트는 `vi.mock('../audio/player', () => ({ getAudioPlayer: () => ({ unlock: vi.fn(async () => {}), schedule: vi.fn(), cancel: vi.fn() }) }))`처럼 팩토리를 준다.
 11. `RunView`는 `defineProps<{ deps?: Partial<RunDeps> }>()`로 의존성 주입. 루트에 `data-phase`, `data-index` 속성.
-12. 숫자 크기 3단계: 두 자리 이하 72cqw, `m:ss`(4글자) 52cqw, `mm:ss`(600초 이상) 40cqw. 클래스 `long`(≥60), `xlong`(≥600).
+12. 숫자 크기 3단계: 두 자리 이하 86cqw, `m:ss`(4글자) 54cqw, `mm:ss`(600초 이상) 43cqw (2026-11-04 글꼴 교체 때 변경, 처음 값은 72/52/40). 클래스 `long`(≥60), `xlong`(≥600).
 13. 프로토타입의 `--font-sans`는 이 프로젝트에서 `--font-num`. 프로토타입 숫자 크기 대신 12번 값.
 14. AppStore에 `state.installHintSeen: boolean`, `dismissInstallHint(): void` (Task 10).
 15. 아이콘은 `public/`에 생성해도 된다(`public/icons/` 고집하지 않음).
-16. Barlow Condensed는 `main.ts`에서 `import '@fontsource/barlow-condensed/latin-600.css'`, `latin-800.css`. Pretendard woff2는 `src/assets/fonts/`로 복사해 `fonts.scss`에서 상대 경로 `@font-face`.
-17. Pretendard 크기 확인, 2MiB 넘으면 workbox `maximumFileSizeToCacheInBytes: 3 * 1024 * 1024`. woff2-subset 디렉터리 이름은 `ls`로 먼저 확인.
+16. (변경됨) 글꼴은 `2026-11-04-ttaeng-font-sound.md`를 따른다. 숫자 TtaengNum, 영문·한글 SUIT. Barlow Condensed와 Pretendard 가변 글꼴은 뺐다.
+17. (해당 없음) Pretendard 가변 글꼴을 뺐으므로 workbox 크기 한도 조정은 필요 없다.
 18. `_tokens.scss` `$color`에 `scrim: rgba(10,10,10,.93)`, `on-accent-sub: rgba(0,0,0,.62)` 추가(Task 6). 직접 색 기입 금지.
 
 ## 자주 틀리는 지점

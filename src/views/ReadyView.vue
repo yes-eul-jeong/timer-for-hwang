@@ -67,7 +67,7 @@ function start() {
 }
 .name {
   font-size: 9cqw;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: -.04em;
   line-height: 1.05;
 }
@@ -89,7 +89,7 @@ function start() {
   gap: .6cqh;
   b {
     font-family: var(--font-num);
-    font-weight: 900;
+    font-weight: 700;
     font-size: 20cqw;
     letter-spacing: var(--tr-tight);
     line-height: 1;
@@ -114,7 +114,7 @@ function start() {
   gap: 3cqw;
   strong {
     font-size: 8.5cqw;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: -.03em;
   }
   em {

@@ -1,8 +1,21 @@
-// Pretendard 가변 글꼴. 오프라인 동작을 위해 앱에 직접 포함한다.
+// 숫자용 글꼴. Pretendard SemiBold 숫자를 60% 폭으로 줄인 파생 글꼴(scripts/make-num-font.py).
+// Pretendard는 OFL의 예약 글꼴 이름(RFN)이 있어 이름을 TtaengNum으로 바꿨다.
+// 굵기 범위를 넓게 잡아 브라우저가 가짜 볼드를 만들지 않게 한다.
 @font-face {
-  font-family: Pretendard;
-  font-weight: 45 920;
+  font-family: TtaengNum;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
-  src: url('../assets/fonts/PretendardVariable.woff2') format('woff2-variations');
+  src: url('../assets/fonts/TtaengNum.woff2') format('woff2');
+}
+
+// 영문 라벨과 한글용 SUIT 가변 글꼴.
+@font-face {
+  font-family: SUIT;
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  src:
+    url('../assets/fonts/SUIT-Variable.woff2') format('woff2-variations'),
+    url('../assets/fonts/SUIT-Variable.woff2') format('woff2');
 }

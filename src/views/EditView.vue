@@ -105,7 +105,7 @@ function remove() {
     }
   }
   span {
-    font-weight: 800;
+    font-weight: 700;
     font-size: 4.4cqw;
   }
 }

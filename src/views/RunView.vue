@@ -145,7 +145,7 @@ function onEnd() {
   text-align: right;
   b {
     font-family: var(--font-num);
-    font-weight: 900;
+    font-weight: 700;
     font-size: 7.5cqw;
     line-height: 1;
     letter-spacing: var(--tr-snug);
@@ -153,7 +153,7 @@ function onEnd() {
   }
 }
 .rphase strong {
-  font-weight: 900;
+  font-weight: 700;
   font-size: 9.5cqw;
   line-height: 1;
   letter-spacing: var(--tr-snug);
@@ -162,15 +162,15 @@ function onEnd() {
   align-self: center;
   justify-self: center;
   font-family: var(--font-num);
-  font-weight: 900;
-  font-size: 72cqw;
+  font-weight: 700;
+  font-size: 86cqw;
   line-height: 1;
   letter-spacing: var(--tr-tight);
   font-variant-numeric: tabular-nums;
   color: var(--pnum);
   white-space: nowrap;
-  &.long { font-size: 52cqw; }
-  &.xlong { font-size: 40cqw; }
+  &.long { font-size: 54cqw; }
+  &.xlong { font-size: 43cqw; }
 }
 .rstats {
   display: grid;
@@ -190,7 +190,7 @@ function onEnd() {
   }
   b {
     font-family: var(--font-num);
-    font-weight: 900;
+    font-weight: 700;
     font-size: 11cqw;
     line-height: 1;
     letter-spacing: -.04em;
@@ -232,14 +232,14 @@ function onEnd() {
     opacity: .6;
   }
   .lab {
-    font-weight: 900;
+    font-weight: 700;
     font-size: 7cqw;
     letter-spacing: var(--tr-snug);
   }
   b {
     margin-left: auto;
     font-family: var(--font-num);
-    font-weight: 900;
+    font-weight: 700;
     font-size: 9cqw;
     letter-spacing: -.04em;
     font-variant-numeric: tabular-nums;
@@ -275,7 +275,7 @@ function onEnd() {
   em {
     font-style: normal;
     font-family: var(--font-num);
-    font-weight: 900;
+    font-weight: 700;
     font-size: 15cqw;
     line-height: 1;
     letter-spacing: .02em;
@@ -289,7 +289,7 @@ function onEnd() {
   }
   button {
     font-size: 6.2cqw;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: -.02em;
     min-height: 11cqh;
     background: var(--c-surface-2);

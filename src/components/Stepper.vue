@@ -37,7 +37,7 @@ defineEmits<{ dec: []; inc: [] }>()
   min-width: 14cqw;
   text-align: center;
   font-family: var(--font-num);
-  font-weight: 900;
+  font-weight: 700;
   font-size: 8cqw;
   letter-spacing: var(--tr-tight);
   font-variant-numeric: tabular-nums;

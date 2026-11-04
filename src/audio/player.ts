@@ -9,7 +9,10 @@ export interface AudioPlayer {
 }
 
 const KINDS: CueKind[] = ['count3', 'count2', 'count1', 'work', 'rest', 'end']
-const LEAD = 0.03
+/** 음성은 모음이 박자로 들리므로 이만큼 먼저 시작한다(초). */
+export const VOICE_EARLY = 0.05
+/** 이만큼까지 늦은 cue는 지금 재생하고, 더 늦으면 건너뛴다(초). */
+const LATE_OK = 0.02
 const MAX_GAIN = 0.22
 
 interface Voice {
@@ -19,11 +22,11 @@ interface Voice {
 
 type Stoppable = { stop(when?: number): void }
 
-export function createAudioPlayer(baseUrl: string): AudioPlayer {
+export function createAudioPlayer(baseUrl: string, now: () => number = () => performance.now()): AudioPlayer {
   let ctx: AudioContext | null = null
   const voices = new Map<CueKind, Voice>()
   let nodes: Stoppable[] = []
-  let last: { cues: Cue[]; elapsedNow: number; mode: SoundMode; ctxTime: number } | null = null
+  let last: { cues: Cue[]; elapsedNow: number; mode: SoundMode; perfAt: number } | null = null
 
   function beep(c: AudioContext, kind: CueKind, when: number) {
     const freq = kind.startsWith('count') ? 880 : 1320
@@ -43,7 +46,7 @@ export function createAudioPlayer(baseUrl: string): AudioPlayer {
     nodes.push(osc)
   }
 
-  function cancel() {
+  function stopNodes() {
     for (const n of nodes) {
       try {
         n.stop()
@@ -52,37 +55,47 @@ export function createAudioPlayer(baseUrl: string): AudioPlayer {
       }
     }
     nodes = []
+  }
+
+  function cancel() {
+    stopNodes()
     last = null
   }
 
-  function schedule(cues: Cue[], elapsedNow: number, mode: SoundMode) {
-    const c = ctx
-    // 기존 예약 취소(기억한 schedule은 새 값으로 덮어쓴다)
-    for (const n of nodes) {
-      try {
-        n.stop()
-      } catch {
-        /* ignore */
-      }
-    }
-    nodes = []
-    if (!c) return
-    last = { cues, elapsedNow, mode, ctxTime: c.currentTime }
-    if (mode === 'off') return
-    for (const cue of cues) {
-      if (cue.at <= elapsedNow) continue // 이미 지난 cue는 즉시 재생되므로 건너뛴다
-      const when = c.currentTime + LEAD + (cue.at - elapsedNow)
-      const v = mode === 'voice' && !cue.beepOnly ? voices.get(cue.kind) : undefined
+  /** performance 시각 p에 소리가 들리려면 넣어야 할 ctx 시각 */
+  function audioTimeAt(c: AudioContext, p: number): number {
+    const ts = typeof c.getOutputTimestamp === 'function' ? c.getOutputTimestamp() : undefined
+    if (ts && ts.performanceTime && ts.performanceTime > 0 && ts.contextTime !== undefined)
+      return ts.contextTime + (p - ts.performanceTime) / 1000
+    return c.currentTime + (p - now()) / 1000 - ((c.baseLatency ?? 0) + (c.outputLatency ?? 0))
+  }
+
+  function play(c: AudioContext) {
+    stopNodes()
+    if (!last || last.mode === 'off' || c.state !== 'running') return
+    const t = now()
+    const elapsed = last.elapsedNow + (t - last.perfAt) / 1000
+    for (const cue of last.cues) {
+      if (cue.at <= elapsed) continue
+      const when = audioTimeAt(c, t + (cue.at - elapsed) * 1000)
+      if (when < c.currentTime - LATE_OK) continue // 늦게 울리느니 건너뛴다
+      const v = last.mode === 'voice' && !cue.beepOnly ? voices.get(cue.kind) : undefined
       if (v) {
         const src = c.createBufferSource()
         src.buffer = v.buffer
         src.connect(c.destination)
-        src.start(when, v.skip)
+        src.start(Math.max(c.currentTime, when - VOICE_EARLY), v.skip)
         nodes.push(src)
       } else {
-        beep(c, cue.kind, when)
+        beep(c, cue.kind, Math.max(c.currentTime, when))
       }
     }
+  }
+
+  function schedule(cues: Cue[], elapsedNow: number, mode: SoundMode) {
+    stopNodes()
+    last = { cues, elapsedNow, mode, perfAt: now() }
+    if (ctx) play(ctx)
   }
 
   async function loadVoices(c: AudioContext) {
@@ -98,10 +111,16 @@ export function createAudioPlayer(baseUrl: string): AudioPlayer {
         }
       }),
     )
-    if (ctx === c && last && last.mode === 'voice' && voices.size > 0) {
-      const { cues, elapsedNow, ctxTime } = last
-      schedule(cues, elapsedNow + (c.currentTime - ctxTime), 'voice')
-    }
+    if (ctx === c && last?.mode === 'voice' && voices.size > 0) play(c)
+  }
+
+  function resumeAndPlay(c: AudioContext) {
+    c.resume().then(
+      () => {
+        if (ctx === c && c.state === 'running') play(c)
+      },
+      () => {},
+    )
   }
 
   async function unlock() {
@@ -118,7 +137,10 @@ export function createAudioPlayer(baseUrl: string): AudioPlayer {
           navigator.audioSession.type = 'playback'
         }
         const c = ctx
-        void c.resume()
+        c.addEventListener('statechange', () => {
+          if (ctx === c && c.state === 'running') play(c)
+        })
+        resumeAndPlay(c)
         const silent = c.createBuffer(1, Math.max(1, Math.ceil(c.sampleRate * 0.001)), c.sampleRate)
         const s = c.createBufferSource()
         s.buffer = silent
@@ -126,7 +148,7 @@ export function createAudioPlayer(baseUrl: string): AudioPlayer {
         s.start()
         if (voices.size === 0) await loadVoices(c)
       } else {
-        void ctx.resume()
+        resumeAndPlay(ctx)
         if (voices.size === 0) await loadVoices(ctx)
       }
     } catch {

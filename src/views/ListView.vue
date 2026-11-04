@@ -34,7 +34,7 @@ const store = useAppStore()
   h2 {
     margin: 0;
     font-size: 10cqw;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: -.04em;
     line-height: 1;
   }
@@ -70,7 +70,7 @@ const store = useAppStore()
 }
 .name {
   font-size: 5.6cqw;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -.02em;
 }
 .sum {
@@ -83,7 +83,7 @@ const store = useAppStore()
   grid-row: 1 / 3;
   grid-column: 2;
   font-family: var(--font-num);
-  font-weight: 900;
+  font-weight: 700;
   font-size: 7cqw;
   letter-spacing: var(--tr-tight);
   font-variant-numeric: tabular-nums;

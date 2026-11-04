@@ -23,11 +23,11 @@ $color: (
 );
 
 // ── 타이포 ──────────────────────────────────
-// 숫자와 영문 라벨은 num(Barlow Condensed), 한글은 kr(Pretendard).
+// 숫자는 num(TtaengNum). 그 글꼴에 없는 영문 라벨·한글은 SUIT로 넘어간다.
 // 글꼴 파일은 앱에 직접 넣는다(오프라인 동작). 소개 페이지의 Satoshi 는 쓰지 않는다.
 $font: (
-  num:  ("Barlow Condensed", "Arial Narrow", -apple-system, system-ui, sans-serif),
-  kr:   (Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif),
+  num:  (TtaengNum, SUIT, -apple-system, system-ui, sans-serif),
+  kr:   (SUIT, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif),
 );
 
 $font-size: (
@@ -37,7 +37,7 @@ $font-size: (
 );
 
 $tracking: (
-  tight:  -.05em,   // 큰 숫자
+  tight:  -.03em,   // 큰 숫자. 글자가 이미 좁아서 덜 좁힌다
   snug:   -.03em,
   widest: .24em,    // 영문 라벨
 );

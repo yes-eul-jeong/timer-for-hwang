@@ -129,7 +129,7 @@ async function doImport(mode: 'replace' | 'merge'): Promise<void> {
   h2 {
     margin: 0;
     font-size: 10cqw;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: -.04em;
     line-height: 1;
   }
@@ -157,7 +157,7 @@ async function doImport(mode: 'replace' | 'merge'): Promise<void> {
   h4 {
     margin: 0;
     font-size: 4.6cqw;
-    font-weight: 800;
+    font-weight: 700;
   }
   p {
     margin: 0;
