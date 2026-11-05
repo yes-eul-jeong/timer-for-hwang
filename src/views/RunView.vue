@@ -178,7 +178,10 @@ function onEnd() {
   font-weight: 700;
   font-size: calc(min(86cqw, 42cqh) * var(--k));
   line-height: 1;
-  letter-spacing: var(--tr-tight);
+  --ls: var(--tr-tight);
+  letter-spacing: var(--ls);
+  // 자간은 마지막 글자 뒤에도 붙어서 상자가 그만큼 좁아지고 글자가 오른쪽으로 밀린다. 그만큼 되돌린다.
+  padding-right: calc(var(--ls) * -1);
   font-variant-numeric: tabular-nums;
   color: var(--pnum);
   white-space: nowrap;
@@ -187,7 +190,7 @@ function onEnd() {
   &.ttaeng {
     font-family: var(--font-kr);
     font-size: 62cqw;
-    letter-spacing: -.06em;
+    --ls: -.06em;
   }
 }
 .rstats {
