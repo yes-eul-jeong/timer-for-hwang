@@ -10,6 +10,14 @@ const share = vi.hoisted(() => ({
   pickBackupFile: vi.fn(),
 }))
 vi.mock('../storage/share', () => share)
+const audio = vi.hoisted(() => ({
+  unlock: vi.fn(async () => {}),
+  schedule: vi.fn(),
+  cancel: vi.fn(),
+  setVolume: vi.fn(),
+  preview: vi.fn(),
+}))
+vi.mock('../audio/player', () => ({ getAudioPlayer: () => audio }))
 
 import SettingsView from './SettingsView.vue'
 
@@ -18,6 +26,8 @@ const DAY = 86_400_000
 beforeEach(async () => {
   share.exportBackupFile.mockReset()
   share.pickBackupFile.mockReset()
+  audio.setVolume.mockClear()
+  audio.preview.mockClear()
   resetAppStore()
   const m = new Map<string, string>()
   const storage = {
@@ -33,13 +43,52 @@ const btn = (w: ReturnType<typeof mount>, text: string) => w.findAll('button').f
 describe('설정', () => {
   test('소리 세그먼트', async () => {
     const w = mount(SettingsView)
-    const seg = w.findAll('.seg button')
+    const seg = w.findAll('.seg:not(.five) button')
     expect(seg.map((b) => b.text())).toEqual(['삐-삐-삐', '한국어 음성', '끔'])
     expect(seg[0]!.attributes('aria-pressed')).toBe('true')
     await seg[2]!.trigger('click')
     expect(useAppStore().state.settings.sound).toBe('off')
     expect(seg[2]!.attributes('aria-pressed')).toBe('true')
     expect(seg[0]!.attributes('aria-pressed')).toBe('false')
+  })
+
+  test('소리 크기는 카운트다운 소리 바로 아래', () => {
+    const w = mount(SettingsView)
+    expect(w.findAll('h4').map((h) => h.text()).slice(0, 3)).toEqual(['카운트다운 소리', '소리 크기', '단계 바뀔 때 화면 번쩍임'])
+  })
+
+  test('소리 크기: 기본 5, 누르면 저장하고 한 번 들려준다', async () => {
+    const w = mount(SettingsView)
+    const five = w.findAll('.seg.five button')
+    expect(five.map((b) => b.text())).toEqual(['1', '2', '3', '4', '5'])
+    expect(five[4]!.attributes('aria-pressed')).toBe('true')
+    expect(w.text()).toContain('누르면 한 번 들려줘요')
+    await five[1]!.trigger('click')
+    expect(useAppStore().state.settings.volume).toBe(2)
+    expect(five[1]!.attributes('aria-pressed')).toBe('true')
+    expect(five[4]!.attributes('aria-pressed')).toBe('false')
+    expect(audio.setVolume).toHaveBeenCalledWith(2)
+    expect(audio.preview).toHaveBeenCalledWith('beep')
+    expect(audio.setVolume.mock.invocationCallOrder[0]!).toBeLessThan(audio.preview.mock.invocationCallOrder[0]!)
+  })
+
+  test('음성 모드면 음성으로 미리듣기', async () => {
+    useAppStore().updateSettings({ sound: 'voice' })
+    const w = mount(SettingsView)
+    await w.findAll('.seg.five button')[2]!.trigger('click')
+    expect(audio.preview).toHaveBeenCalledWith('voice')
+  })
+
+  test('끔이면 비활성 + 안내', async () => {
+    useAppStore().updateSettings({ sound: 'off' })
+    const w = mount(SettingsView)
+    const five = w.findAll('.seg.five button')
+    expect(five.every((b) => b.attributes('disabled') !== undefined)).toBe(true)
+    expect(w.text()).toContain('소리를 끄면 쓸 수 없어요')
+    expect(w.text()).not.toContain('누르면 한 번 들려줘요')
+    await five[0]!.trigger('click')
+    expect(useAppStore().state.settings.volume).toBe(5)
+    expect(audio.preview).not.toHaveBeenCalled()
   })
 
   test('번쩍임 토글', async () => {

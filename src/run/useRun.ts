@@ -162,6 +162,7 @@ export function useRun(config: TimerConfig, settings: Settings, deps: Partial<Ru
   }
 
   d.doc.addEventListener('visibilitychange', onVisibility)
+  d.audio.setVolume(settings.volume)
   d.audio.schedule(cuesFrom(seq, -1e-6), 0, settings.sound)
   void acquireLock()
   startLoop()

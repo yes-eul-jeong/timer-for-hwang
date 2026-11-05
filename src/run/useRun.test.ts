@@ -10,7 +10,7 @@ function fakeDeps() {
   let t = 0
   let nextId = 1
   const frames = new Map<number, () => void>()
-  const audio = { unlock: vi.fn(async () => {}), schedule: vi.fn(), cancel: vi.fn() } satisfies AudioPlayer
+  const audio = { unlock: vi.fn(async () => {}), schedule: vi.fn(), cancel: vi.fn(), setVolume: vi.fn(), preview: vi.fn() } satisfies AudioPlayer
   const release = vi.fn(async () => {})
   const wakeLock = vi.fn(async () => ({ release }))
   const deps: RunDeps = {
@@ -46,11 +46,18 @@ beforeEach(() => {
   scope = effectScope()
 })
 
-function start(f: ReturnType<typeof fakeDeps>, settings: Settings = { sound: 'beep', flash: true }, config = tabata) {
+function start(f: ReturnType<typeof fakeDeps>, settings: Settings = { sound: 'beep', flash: true, volume: 5 }, config = tabata) {
   return scope.run(() => useRun(config, settings, f.deps))!
 }
 
 const tick = () => new Promise<void>((r) => setTimeout(r, 0))
+
+test('첫 예약 전에 설정 음량을 적용한다', () => {
+  const f = fakeDeps()
+  start(f, { sound: 'beep', flash: true, volume: 2 })
+  expect(f.audio.setVolume).toHaveBeenCalledWith(2)
+  expect(f.audio.setVolume.mock.invocationCallOrder[0]!).toBeLessThan(f.audio.schedule.mock.invocationCallOrder[0]!)
+})
 
 test('schedules cues once at start from before zero', () => {
   const f = fakeDeps()
@@ -75,7 +82,7 @@ test('advances on animation frame and bumps flashKey', () => {
 
 test('flash off keeps flashKey at 0', () => {
   const f = fakeDeps()
-  const r = start(f, { sound: 'beep', flash: false })
+  const r = start(f, { sound: 'beep', flash: false, volume: 5 })
   f.setNow(10500)
   f.flush()
   expect(r.state.value.phase).toBe('work')

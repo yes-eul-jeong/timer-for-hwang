@@ -1,14 +1,16 @@
 import { test, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { Cue } from './cues'
-import { createAudioPlayer, VOICE_EARLY } from './player'
+import { createAudioPlayer, VOICE_EARLY, BEEP_GAIN, VOICE_PEAK } from './player'
 
 interface Rec { starts: number[][]; stops: number; immediate?: number }
 let ctx: FakeCtx
 let oscs: (Rec & { type?: string })[]
 let sources: (Rec & { buffer?: unknown })[]
+interface FakeGain { gain: { value: number; setValueAtTime: ReturnType<typeof vi.fn>; linearRampToValueAtTime: ReturnType<typeof vi.fn> } }
+let gains: FakeGain[]
 let t = 1000
 const now = () => t
-const voiceBuf = { sampleRate: 44100, getChannelData: () => new Float32Array([0.5]) }
+const voiceBuf = { sampleRate: 44100, numberOfChannels: 1, getChannelData: () => new Float32Array([0.5]) }
 
 class FakeCtx {
   static initialState: AudioContextState = 'running'
@@ -27,8 +29,8 @@ class FakeCtx {
   createBuffer = () => ({})
   decodeAudioData = async () => voiceBuf
   createGain = () => {
-    const p = { setValueAtTime() {}, linearRampToValueAtTime() {} }
-    const g = { gain: p, connect: (x: unknown) => x }
+    const g = { gain: { value: 1, setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() }, connect: (x: unknown) => x }
+    gains.push(g)
     return g
   }
   createOscillator = () => {
@@ -50,7 +52,7 @@ class FakeCtx {
 const cue = (at: number, kind: Cue['kind'] = 'work'): Cue => ({ at, kind, beepOnly: false })
 
 beforeEach(() => {
-  oscs = []; sources = []
+  oscs = []; sources = []; gains = []
   t = 1000
   FakeCtx.initialState = 'running'
   vi.stubGlobal('AudioContext', FakeCtx)
@@ -169,4 +171,101 @@ test('does nothing in off mode', async () => {
   p.schedule([cue(1)], 0, 'off')
   expect(oscs).toHaveLength(0)
   expect(sources.filter((s) => s.buffer === voiceBuf)).toHaveLength(0)
+})
+
+const peakOfGain = (g: FakeGain) => g.gain.linearRampToValueAtTime.mock.calls[0]![0] as number
+type Osc = Rec & { frequency: { value: number } }
+
+test('beep 기본 음량은 5단계', async () => {
+  const p = createAudioPlayer('/', now)
+  await p.unlock()
+  p.schedule([cue(1)], 0, 'beep')
+  expect(gains).toHaveLength(1)
+  expect(peakOfGain(gains[0]!)).toBeCloseTo(0.70, 5)
+  expect(BEEP_GAIN[4]).toBe(0.70)
+})
+
+test('beep 최고점이 단계를 따른다', async () => {
+  const p = createAudioPlayer('/', now)
+  await p.unlock()
+  p.setVolume(1)
+  p.schedule([cue(1)], 0, 'beep')
+  expect(peakOfGain(gains[0]!)).toBeCloseTo(0.22, 5)
+  p.setVolume(3)
+  p.schedule([cue(1)], 0, 'beep')
+  expect(peakOfGain(gains[1]!)).toBeCloseTo(0.392, 5)
+  expect((oscs as Osc[]).map((o) => o.frequency.value)).toEqual([1320, 1320])
+})
+
+test('음성은 GainNode로 peak 정규화', async () => {
+  const p = createAudioPlayer('/', now)
+  await p.unlock()
+  p.schedule([cue(2)], 0, 'voice')
+  expect(gains).toHaveLength(1)
+  expect(gains[0]!.gain.value).toBeCloseTo(0.95 / 0.5, 5)
+  p.setVolume(1)
+  p.schedule([cue(2)], 0, 'voice')
+  expect(gains[1]!.gain.value).toBeCloseTo(0.45 / 0.5, 5)
+  expect(VOICE_PEAK[0]).toBe(0.45)
+})
+
+test('peak 0인 음성은 gain 1', async () => {
+  const silent = { sampleRate: 44100, numberOfChannels: 1, getChannelData: () => new Float32Array([0, 0]) }
+  const p = createAudioPlayer('/', now)
+  const done = p.unlock()
+  ctx.decodeAudioData = async () => silent as unknown as typeof voiceBuf
+  await done
+  p.schedule([cue(2)], 0, 'voice')
+  expect(sources.filter((s) => s.buffer === silent)).toHaveLength(1)
+  expect(gains[0]!.gain.value).toBe(1)
+})
+
+test('preview: unlock 없이 바로 count3 신호음 한 번', () => {
+  const p = createAudioPlayer('/', now)
+  p.preview('beep')
+  expect(ctx.resume).toHaveBeenCalled()
+  expect(oscs).toHaveLength(1)
+  expect((oscs[0] as Osc).frequency.value).toBe(880)
+  expect(oscs[0]!.starts[0]![0]).toBeCloseTo(ctx.currentTime, 5)
+})
+
+test('preview voice: 불러오기 전이면 신호음', () => {
+  const p = createAudioPlayer('/', now)
+  p.preview('voice')
+  expect(oscs).toHaveLength(1)
+  expect(sources.filter((s) => s.buffer === voiceBuf)).toHaveLength(0)
+})
+
+test('preview voice: 불러온 뒤면 음성', async () => {
+  const p = createAudioPlayer('/', now)
+  await p.unlock()
+  p.preview('voice')
+  expect(oscs).toHaveLength(0)
+  expect(sources.filter((s) => s.buffer === voiceBuf)).toHaveLength(1)
+})
+
+test('preview off는 아무것도 안 낸다', () => {
+  const p = createAudioPlayer('/', now)
+  p.preview('off')
+  expect(oscs).toHaveLength(0)
+  expect(sources.filter((s) => s.buffer === voiceBuf)).toHaveLength(0)
+})
+
+test('preview: suspended면 resume 뒤에 낸다', async () => {
+  FakeCtx.initialState = 'suspended'
+  const p = createAudioPlayer('/', now)
+  p.preview('beep')
+  expect(oscs).toHaveLength(0)
+  ctx.state = 'running'
+  await Promise.resolve()
+  await Promise.resolve()
+  expect(oscs).toHaveLength(1)
+})
+
+test('preview 노드는 schedule이 끄지 않는다', async () => {
+  const p = createAudioPlayer('/', now)
+  await p.unlock()
+  p.preview('beep')
+  p.schedule([cue(1)], 0, 'beep')
+  expect(oscs[0]!.immediate).toBe(0)
 })

@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'vitest'
-import { stepValue, isValidTimer, TIMER_FIELDS } from './limits'
+import { stepValue, isValidTimer, TIMER_FIELDS, toVolume } from './limits'
 import type { Timer } from './types'
 
 const ok: Timer = { id: 'a', name: '타바타', prepare: 10, work: 20, rest: 10, sets: 8, rounds: 1, roundRest: 0, createdAt: '2026-11-04T00:00:00.000Z' }
@@ -43,4 +43,9 @@ describe('isValidTimer', () => {
     expect(isValidTimer('x')).toBe(false)
   })
   test('필드 정의 6개', () => expect(TIMER_FIELDS).toHaveLength(6))
+})
+
+test('toVolume: 정수 1~5만 통과, 나머지는 5', () => {
+  for (const v of [1, 2, 3, 4, 5]) expect(toVolume(v)).toBe(v)
+  for (const v of [0, 6, 2.5, '3', null, undefined, NaN]) expect(toVolume(v)).toBe(5)
 })

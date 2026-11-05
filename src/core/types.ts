@@ -31,12 +31,15 @@ export interface Sequence {
 
 export type SoundMode = 'beep' | 'voice' | 'off'
 
+export type Volume = 1 | 2 | 3 | 4 | 5
+
 export interface Settings {
   sound: SoundMode
   flash: boolean
+  volume: Volume
 }
 
-export const DEFAULT_SETTINGS: Settings = { sound: 'beep', flash: true }
+export const DEFAULT_SETTINGS: Settings = { sound: 'beep', flash: true, volume: 5 }
 
 export interface RunState {
   phase: Phase | 'done'

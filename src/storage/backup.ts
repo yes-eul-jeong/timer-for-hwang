@@ -1,4 +1,4 @@
-import { isValidTimer } from '../core/limits'
+import { isValidTimer, toVolume } from '../core/limits'
 import { DEFAULT_SETTINGS, type Settings, type Timer } from '../core/types'
 
 export interface BackupFile {
@@ -27,7 +27,7 @@ function fixSettings(x: unknown): Settings {
   if ((o.sound !== 'beep' && o.sound !== 'voice' && o.sound !== 'off') || typeof o.flash !== 'boolean') {
     return { ...DEFAULT_SETTINGS }
   }
-  return { sound: o.sound, flash: o.flash }
+  return { sound: o.sound, flash: o.flash, volume: toVolume(o.volume) }
 }
 
 export function parseBackup(text: string): ParseResult {

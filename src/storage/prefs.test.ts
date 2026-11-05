@@ -20,8 +20,21 @@ describe('createPrefs', () => {
   })
   test('설정 왕복', () => {
     const p = createPrefs(memStorage())
-    p.setSettings({ sound: 'voice', flash: false })
-    expect(p.getSettings()).toEqual({ sound: 'voice', flash: false })
+    p.setSettings({ sound: 'voice', flash: false, volume: 5 })
+    expect(p.getSettings()).toEqual({ sound: 'voice', flash: false, volume: 5 })
+  })
+  test('volume 저장·복원', () => {
+    const p = createPrefs(memStorage())
+    p.setSettings({ sound: 'voice', flash: false, volume: 2 })
+    expect(p.getSettings()).toEqual({ sound: 'voice', flash: false, volume: 2 })
+  })
+  test('volume 없는 옛 설정은 5, 나머지 유지', () => {
+    const p = createPrefs(memStorage({ 'ttaeng.settings': '{"sound":"voice","flash":false}' }))
+    expect(p.getSettings()).toEqual({ sound: 'voice', flash: false, volume: 5 })
+  })
+  test('잘못된 volume은 5', () => {
+    const p = createPrefs(memStorage({ 'ttaeng.settings': '{"sound":"off","flash":true,"volume":9}' }))
+    expect(p.getSettings()).toEqual({ sound: 'off', flash: true, volume: 5 })
   })
   test('깨진 JSON이면 기본 설정', () => {
     const p = createPrefs(memStorage({ 'ttaeng.settings': '{oops' }))

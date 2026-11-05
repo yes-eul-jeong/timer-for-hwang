@@ -95,14 +95,14 @@ describe('app store', () => {
     const { store, repo } = await setup()
     const [a, b] = store.state.timers
     await store.importBackup(
-      { app: 'ttaeng', version: 1, exportedAt: '', timers: [a!], settings: { sound: 'off', flash: false } },
+      { app: 'ttaeng', version: 1, exportedAt: '', timers: [a!], settings: { sound: 'off', flash: false, volume: 5 } },
       'replace',
     )
     expect(store.state.timers).toHaveLength(1)
     expect(await repo.list()).toHaveLength(1)
     expect(store.state.settings.sound).toBe('off')
     await store.importBackup(
-      { app: 'ttaeng', version: 1, exportedAt: '', timers: [b!], settings: { sound: 'off', flash: false } },
+      { app: 'ttaeng', version: 1, exportedAt: '', timers: [b!], settings: { sound: 'off', flash: false, volume: 5 } },
       'merge',
     )
     expect(store.state.timers).toHaveLength(2)

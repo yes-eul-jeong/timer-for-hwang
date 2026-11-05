@@ -7,7 +7,7 @@ import ReadyView from './ReadyView.vue'
 
 const unlock = vi.fn(async () => {})
 vi.mock('../audio/player', () => ({
-  getAudioPlayer: () => ({ unlock, schedule: vi.fn(), cancel: vi.fn() }),
+  getAudioPlayer: () => ({ unlock, schedule: vi.fn(), cancel: vi.fn(), setVolume: vi.fn(), preview: vi.fn() }),
 }))
 
 beforeEach(async () => {

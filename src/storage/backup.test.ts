@@ -5,7 +5,7 @@ import { DEFAULT_SETTINGS, type Timer } from '../core/types'
 const t = (id: string, extra: Partial<Timer> = {}): Timer => ({
   id, name: id, prepare: 10, work: 20, rest: 10, sets: 8, rounds: 1, roundRest: 0, createdAt: '2026-11-04T00:00:00.000Z', ...extra,
 })
-const settings = { sound: 'voice' as const, flash: false }
+const settings = { sound: 'voice' as const, flash: false, volume: 3 as const }
 const raw = (over: Record<string, unknown>) =>
   JSON.stringify({ app: 'ttaeng', version: 1, exportedAt: 'x', timers: [t('a')], settings, ...over })
 
@@ -65,6 +65,14 @@ describe('parseBackup', () => {
   test('settings 깨지면 기본값', () => {
     const r = parseBackup(raw({ settings: { sound: 'loud', flash: 1 } }))
     expect(r.ok && r.data.settings).toEqual(DEFAULT_SETTINGS)
+  })
+  test('volume 없는 옛 백업은 5', () => {
+    const r = parseBackup(raw({ settings: { sound: 'voice', flash: false } }))
+    expect(r.ok && r.data.settings).toEqual({ sound: 'voice', flash: false, volume: 5 })
+  })
+  test('volume 깨지면 그 필드만 5', () => {
+    const r = parseBackup(raw({ settings: { sound: 'off', flash: true, volume: 'loud' } }))
+    expect(r.ok && r.data.settings).toEqual({ sound: 'off', flash: true, volume: 5 })
   })
 })
 

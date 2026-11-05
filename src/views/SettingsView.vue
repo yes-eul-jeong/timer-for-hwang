@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useAppStore } from '../app/store'
-import type { Settings } from '../core/types'
+import type { Settings, Volume } from '../core/types'
+import { getAudioPlayer } from '../audio/player'
 import { createBackup, parseBackup, type BackupFile } from '../storage/backup'
 import { exportBackupFile, pickBackupFile } from '../storage/share'
 
@@ -14,6 +15,18 @@ const sounds: { value: Settings['sound']; label: string }[] = [
   { value: 'voice', label: '한국어 음성' },
   { value: 'off', label: '끔' },
 ]
+
+const volumes: Volume[] = [1, 2, 3, 4, 5]
+const soundOff = computed(() => store.state.settings.sound === 'off')
+
+/** iOS: 미리듣기는 제스처 안에서 동기로 낸다. await 금지. */
+function pickVolume(n: Volume): void {
+  if (soundOff.value) return
+  store.updateSettings({ volume: n })
+  const player = getAudioPlayer()
+  player.setVolume(n)
+  player.preview(store.state.settings.sound)
+}
 
 const lastBackupText = computed(() => {
   const iso = store.state.lastBackupAt
@@ -78,6 +91,24 @@ async function doImport(mode: 'replace' | 'merge'): Promise<void> {
           </button>
         </div>
         <p>한국어 음성은 "삼, 이, 일, 시작"을 녹음 파일로 재생합니다. 3초 이하 단계는 삐 소리로 나와요.</p>
+      </div>
+      <div class="group">
+        <div class="h4row">
+          <h4>소리 크기</h4>
+          <span>{{ soundOff ? '소리를 끄면 쓸 수 없어요' : '누르면 한 번 들려줘요' }}</span>
+        </div>
+        <div class="seg five">
+          <button
+            v-for="n in volumes"
+            :key="n"
+            type="button"
+            :disabled="soundOff"
+            :aria-pressed="store.state.settings.volume === n"
+            @click="pickVolume(n)"
+          >
+            {{ n }}
+          </button>
+        </div>
       </div>
       <div class="group">
         <div class="row2">
@@ -191,6 +222,30 @@ async function doImport(mode: 'replace' | 'merge'): Promise<void> {
       background: var(--c-accent);
       color: var(--c-on-accent);
     }
+    &:disabled {
+      color: var(--c-dim);
+      cursor: default;
+    }
+    &:disabled[aria-pressed='true'] {
+      background: var(--c-surface-2);
+      color: var(--c-muted);
+    }
+  }
+}
+.seg.five {
+  grid-template-columns: repeat(5, 1fr);
+  button {
+    font-family: var(--font-num);
+    font-size: 4.6cqw;
+  }
+}
+.h4row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  span {
+    font-size: 3.2cqw;
+    color: var(--c-muted);
   }
 }
 .row2 {

@@ -1,4 +1,5 @@
 import { DEFAULT_SETTINGS, type Settings } from '../core/types'
+import { toVolume } from '../core/limits'
 
 export interface Prefs {
   getSettings(): Settings
@@ -43,7 +44,7 @@ export function createPrefs(storage?: Storage): Prefs {
         const o = JSON.parse(raw) as Partial<Settings>
         const sound = o.sound === 'beep' || o.sound === 'voice' || o.sound === 'off' ? o.sound : DEFAULT_SETTINGS.sound
         const flash = typeof o.flash === 'boolean' ? o.flash : DEFAULT_SETTINGS.flash
-        return { sound, flash }
+        return { sound, flash, volume: toVolume(o.volume) }
       } catch {
         return { ...DEFAULT_SETTINGS }
       }

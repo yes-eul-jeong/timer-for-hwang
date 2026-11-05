@@ -5,3 +5,15 @@ export function leadingSilence(samples: Float32Array, sampleRate: number, thresh
   }
   return 0
 }
+
+/** 모든 채널 |x|의 최댓값 */
+export function peakOf(channels: Float32Array[]): number {
+  let m = 0
+  for (const ch of channels) {
+    for (let i = 0; i < ch.length; i++) {
+      const a = Math.abs(ch[i]!)
+      if (a > m) m = a
+    }
+  }
+  return m
+}
