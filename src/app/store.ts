@@ -1,7 +1,7 @@
 import { reactive, toRaw } from 'vue'
 import { stepValue } from '../core/limits'
 import type { Settings, Timer, TimerConfig } from '../core/types'
-import { DEFAULT_SETTINGS } from '../core/types'
+import { DEFAULT_SETTINGS, toConfig } from '../core/types'
 import { createMemoryRepo, loadTimersWithSeed, newId, openTimerRepo, type TimerRepo } from '../storage/db'
 import { createPrefs, type Prefs } from '../storage/prefs'
 import { mergeTimers, type BackupFile } from '../storage/backup'
@@ -59,18 +59,6 @@ let toastTimer: ReturnType<typeof setTimeout> | null = null
 
 function plain(t: Timer): Timer {
   return { ...toRaw(t) }
-}
-
-function toConfig(t: Timer): TimerConfig {
-  return {
-    name: t.name,
-    prepare: t.prepare,
-    work: t.work,
-    rest: t.rest,
-    sets: t.sets,
-    rounds: t.rounds,
-    roundRest: t.roundRest,
-  }
 }
 
 function showToast(msg: string): void {

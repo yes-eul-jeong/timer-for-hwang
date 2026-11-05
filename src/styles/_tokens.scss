@@ -23,11 +23,11 @@ $color: (
 );
 
 // ── 타이포 ──────────────────────────────────
-// 숫자는 num(TtaengNum). 그 글꼴에 없는 영문 라벨·한글은 SUIT로 넘어간다.
+// 숫자는 num(TtaengNum). 그 글꼴에 없는 영문 라벨·한글은 TtaengKr(SUIT 파생, 400·700)로 넘어간다.
 // 글꼴 파일은 앱에 직접 넣는다(오프라인 동작). 소개 페이지의 Satoshi 는 쓰지 않는다.
 $font: (
-  num:  (TtaengNum, SUIT, -apple-system, system-ui, sans-serif),
-  kr:   (SUIT, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif),
+  num:  (TtaengNum, TtaengKr, -apple-system, system-ui, sans-serif),
+  kr:   (TtaengKr, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif),
 );
 
 $font-size: (

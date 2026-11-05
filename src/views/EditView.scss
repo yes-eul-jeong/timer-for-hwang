@@ -1,0 +1,45 @@
+@use '../styles/ui';
+
+.view { @include ui.view; }
+.bar {
+  @include ui.bar;
+  button {
+    &.go {
+      color: var(--c-accent);
+    }
+  }
+  span {
+    font-weight: 700;
+    font-size: 4.4cqw;
+  }
+}
+.scroll { @include ui.scroll(calc(4cqh + env(safe-area-inset-bottom, 0px)), 2cqw); }
+.label-en { @include ui.label-en(var(--c-muted)); }
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 1cqh;
+  padding-bottom: 2cqh;
+  input {
+    font: inherit;
+    font-size: 5.4cqw;
+    font-weight: 700;
+    color: var(--c-fg);
+    background: var(--c-surface);
+    border: 1px solid var(--c-line-2);
+    border-radius: 0;
+    padding: 3cqw;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+.steppers { @include ui.steppers; }
+.danger {
+  margin-top: 3cqh;
+  min-height: 10cqh;
+  background: none;
+  border: 1px solid var(--c-line-2);
+  color: var(--c-muted);
+  font-size: 4.4cqw;
+  font-weight: 700;
+}

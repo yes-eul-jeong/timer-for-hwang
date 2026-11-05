@@ -1,0 +1,57 @@
+@use '../styles/ui';
+
+.view { @include ui.view; }
+.bar { @include ui.bar; }
+.ready-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2cqh 5cqw calc(4cqh + env(safe-area-inset-bottom, 0px));
+  gap: 2.5cqh;
+}
+.name {
+  font-size: 9cqw;
+  font-weight: 700;
+  letter-spacing: -.04em;
+  line-height: 1.05;
+}
+.sum {
+  font-size: 3.8cqw;
+  color: var(--c-muted);
+  margin-top: -1.5cqh;
+}
+.label-en { @include ui.label-en(var(--c-muted)); }
+.ready-total {
+  display: flex;
+  flex-direction: column;
+  gap: .6cqh;
+  b {
+    font-family: var(--font-num);
+    font-weight: 700;
+    font-size: 20cqw;
+    letter-spacing: var(--tr-tight);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+}
+.steppers { @include ui.steppers; }
+.start {
+  margin-top: auto;
+  min-height: 12cqh;
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3cqw;
+  strong {
+    font-size: 8.5cqw;
+    font-weight: 700;
+    letter-spacing: -.03em;
+  }
+  em {
+    font-style: normal;
+    @include ui.label-en(var(--c-on-accent-sub), 3cqw);
+  }
+}

@@ -39,8 +39,9 @@ export function createAudioPlayer(baseUrl: string, now: () => number = () => per
 
   function beep(c: AudioContext, kind: CueKind, when: number): Stoppable {
     const peak = BEEP_GAIN[level - 1]!
-    const freq = kind.startsWith('count') ? 880 : 1320
-    const dur = kind.startsWith('count') ? 0.12 : kind === 'end' ? 0.9 : 0.45
+    const count = kind.startsWith('count')
+    const freq = count ? 880 : 1320
+    const dur = count ? 0.12 : kind === 'end' ? 0.9 : 0.45
     const osc = c.createOscillator()
     const gain = c.createGain()
     osc.type = 'square'
@@ -66,14 +67,16 @@ export function createAudioPlayer(baseUrl: string, now: () => number = () => per
     return src
   }
 
-  function stopNodes() {
-    for (const n of nodes) {
-      try {
-        n.stop()
-      } catch {
-        /* 이미 끝났거나 시작 전인 노드 */
-      }
+  function safeStop(n: Stoppable) {
+    try {
+      n.stop()
+    } catch {
+      /* 이미 끝났거나 시작 전인 노드 */
     }
+  }
+
+  function stopNodes() {
+    for (const n of nodes) safeStop(n)
     nodes = []
   }
 
@@ -109,7 +112,7 @@ export function createAudioPlayer(baseUrl: string, now: () => number = () => per
   }
 
   function schedule(cues: Cue[], elapsedNow: number, mode: SoundMode) {
-    stopNodes()
+    // ctx가 없으면 nodes도 비어 있고, 있으면 play가 먼저 stopNodes를 부른다.
     last = { cues, elapsedNow, mode, perfAt: now() }
     if (ctx) play(ctx)
   }
@@ -144,34 +147,42 @@ export function createAudioPlayer(baseUrl: string, now: () => number = () => per
     )
   }
 
+  function createContext(): AudioContext | null {
+    const Ctor =
+      typeof AudioContext !== 'undefined'
+        ? AudioContext
+        : (globalThis as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!Ctor) return null
+    const c = new Ctor()
+    ctx = c
+    if (typeof navigator !== 'undefined' && navigator.audioSession) {
+      navigator.audioSession.type = 'playback'
+    }
+    c.addEventListener('statechange', () => {
+      if (ctx === c && c.state === 'running') play(c)
+    })
+    return c
+  }
+
+  /** 1ms 무음 버퍼를 한 번 재생해 출력을 연다. */
+  function primeSilent(c: AudioContext) {
+    const silent = c.createBuffer(1, Math.max(1, Math.ceil(c.sampleRate * 0.001)), c.sampleRate)
+    const s = c.createBufferSource()
+    s.buffer = silent
+    s.connect(c.destination)
+    s.start()
+  }
+
   async function unlock() {
     try {
-      // iOS: 사용자 제스처 안에서 동기로 생성·resume 해야 한다. await는 그 뒤에.
-      if (!ctx) {
-        const Ctor =
-          typeof AudioContext !== 'undefined'
-            ? AudioContext
-            : (globalThis as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-        if (!Ctor) return
-        ctx = new Ctor()
-        if (typeof navigator !== 'undefined' && navigator.audioSession) {
-          navigator.audioSession.type = 'playback'
-        }
-        const c = ctx
-        c.addEventListener('statechange', () => {
-          if (ctx === c && c.state === 'running') play(c)
-        })
-        resumeAndPlay(c)
-        const silent = c.createBuffer(1, Math.max(1, Math.ceil(c.sampleRate * 0.001)), c.sampleRate)
-        const s = c.createBufferSource()
-        s.buffer = silent
-        s.connect(c.destination)
-        s.start()
-        if (voices.size === 0) await loadVoices(c)
-      } else {
-        resumeAndPlay(ctx)
-        if (voices.size === 0) await loadVoices(ctx)
-      }
+      // iOS: 사용자 제스처 안에서 동기로 생성·resume 해야 한다. 첫 await는 그 뒤에 둔다.
+      // preview가 이 점에 기댄다(void unlock() 직후 ctx를 읽는다).
+      const fresh = ctx === null
+      const c = ctx ?? createContext()
+      if (!c) return
+      resumeAndPlay(c)
+      if (fresh) primeSilent(c)
+      if (voices.size === 0) await loadVoices(c)
     } catch {
       /* unlock은 reject하지 않는다 */
     }
@@ -189,13 +200,7 @@ export function createAudioPlayer(baseUrl: string, now: () => number = () => per
     if (!c) return
     const fire = () => {
       if (ctx !== c || c.state !== 'running') return
-      if (previewNode) {
-        try {
-          previewNode.stop()
-        } catch {
-          /* 이미 끝난 노드 */
-        }
-      }
+      if (previewNode) safeStop(previewNode)
       const v = mode === 'voice' ? voices.get('count3') : undefined
       previewNode = v ? voice(c, v, c.currentTime) : beep(c, 'count3', c.currentTime)
     }

@@ -1,0 +1,39 @@
+@use '../styles/ui';
+
+.view { @include ui.view(true); }
+.vhead { @include ui.vhead; }
+.label-en { @include ui.label-en(var(--c-accent)); }
+.scroll { @include ui.scroll(4cqh, 2cqw); }
+.tcard {
+  text-align: left;
+  background: var(--c-surface);
+  border: 1px solid var(--c-line-2);
+  padding: 4cqw;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1cqh 3cqw;
+  align-items: end;
+  &:active {
+    border-color: var(--c-accent);
+  }
+}
+.name {
+  font-size: 5.6cqw;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.sum {
+  grid-column: 1;
+  font-size: 3.4cqw;
+  color: var(--c-muted);
+  font-variant-numeric: tabular-nums;
+}
+.dur {
+  grid-row: 1 / 3;
+  grid-column: 2;
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 7cqw;
+  letter-spacing: var(--tr-tight);
+  font-variant-numeric: tabular-nums;
+}

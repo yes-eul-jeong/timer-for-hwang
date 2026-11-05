@@ -14,6 +14,19 @@ export interface Timer {
 
 export type TimerConfig = Omit<Timer, 'id' | 'createdAt'>
 
+/** Timer(또는 TimerConfig)에서 설정 일곱 필드만 복사한다. 다른 필드가 섞이지 않게 하나씩 적는다. */
+export function toConfig(t: TimerConfig): TimerConfig {
+  return {
+    name: t.name,
+    prepare: t.prepare,
+    work: t.work,
+    rest: t.rest,
+    sets: t.sets,
+    rounds: t.rounds,
+    roundRest: t.roundRest,
+  }
+}
+
 /** set/round = 이 단계 기준 "다음(또는 현재) 운동 세트" */
 export interface Step {
   phase: Phase

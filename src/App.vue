@@ -25,13 +25,4 @@ const store = useAppStore()
   </div>
 </template>
 
-<style scoped lang="scss">
-.app {
-  container-type: size;
-  height: 100dvh;
-  position: relative;
-  overflow: hidden;
-  background: var(--c-bg);
-  color: var(--c-fg);
-}
-</style>
+<style scoped lang="scss" src="./App.scss"></style>

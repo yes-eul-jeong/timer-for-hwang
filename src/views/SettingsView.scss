@@ -1,0 +1,118 @@
+@use '../styles/ui';
+
+.view { @include ui.view(true); }
+.vhead { @include ui.vhead; }
+.label-en { @include ui.label-en(var(--c-accent)); }
+.scroll { @include ui.scroll(4cqh); }
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4cqh;
+  padding: 2.4cqh 0;
+  border-bottom: 1px solid var(--c-line-2);
+  h4 {
+    margin: 0;
+    font-size: 4.6cqw;
+    font-weight: 700;
+  }
+  p {
+    margin: 0;
+    font-size: 3.4cqw;
+    color: var(--c-muted);
+  }
+}
+.warn p,
+.nudge {
+  color: var(--c-accent);
+  font-weight: 700;
+}
+.seg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--c-line-2);
+  border-radius: 0;
+  button {
+    background: var(--c-surface);
+    border: 0;
+    border-right: 1px solid var(--c-line-2);
+    min-height: 10cqw;
+    font-size: 3.8cqw;
+    font-weight: 700;
+    color: var(--c-muted);
+    &:last-child {
+      border-right: 0;
+    }
+    &[aria-pressed='true'] {
+      background: var(--c-accent);
+      color: var(--c-on-accent);
+    }
+    &:disabled {
+      color: var(--c-dim);
+      cursor: default;
+    }
+    &:disabled[aria-pressed='true'] {
+      background: var(--c-surface-2);
+      color: var(--c-muted);
+    }
+  }
+}
+.seg.five {
+  grid-template-columns: repeat(5, 1fr);
+  button {
+    font-family: var(--font-num);
+    font-size: 4.6cqw;
+  }
+}
+.h4row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  span {
+    font-size: 3.2cqw;
+    color: var(--c-muted);
+  }
+}
+.row2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3cqw;
+}
+.toggle {
+  width: 16cqw;
+  height: 8.5cqw;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-line-2);
+  position: relative;
+  flex: none;
+  &::after {
+    content: '';
+    position: absolute;
+    top: .9cqw;
+    left: .9cqw;
+    width: 6cqw;
+    height: 6cqw;
+    background: var(--c-muted);
+    transition: transform var(--d-base) var(--e-out);
+  }
+  &[aria-pressed='true'] {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+    &::after {
+      transform: translateX(7.4cqw);
+      background: var(--c-on-accent);
+    }
+  }
+}
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4cqh;
+}
+.btn-wide {
+  min-height: 11cqw;
+  background: var(--c-surface);
+  border: 1px solid var(--c-line-2);
+  font-size: 4cqw;
+  font-weight: 700;
+}

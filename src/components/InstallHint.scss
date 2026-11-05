@@ -1,0 +1,29 @@
+.hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--gutter) calc(var(--s-4) + env(safe-area-inset-bottom, 0px));
+  background: var(--c-surface-2);
+  border-top: 1px solid var(--c-line-2);
+  color: var(--c-fg);
+}
+.msg {
+  flex: 1;
+  margin: 0;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+.ok {
+  flex: none;
+  min-height: 44px;
+  padding: 0 var(--s-5);
+  border: 0;
+  background: var(--c-accent);
+  color: var(--c-on-accent);
+  font-weight: 700;
+}

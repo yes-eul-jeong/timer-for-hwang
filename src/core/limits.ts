@@ -1,4 +1,4 @@
-import type { Timer, Volume } from './types'
+import type { SoundMode, Timer, Volume } from './types'
 
 export type TimerField = 'prepare' | 'work' | 'rest' | 'sets' | 'rounds' | 'roundRest'
 
@@ -35,4 +35,8 @@ export function isValidTimer(x: unknown): x is Timer {
 /** 정수 1~5가 아니면 5 */
 export function toVolume(x: unknown): Volume {
   return typeof x === 'number' && Number.isInteger(x) && x >= 1 && x <= 5 ? (x as Volume) : 5
+}
+
+export function isSoundMode(x: unknown): x is SoundMode {
+  return x === 'beep' || x === 'voice' || x === 'off'
 }

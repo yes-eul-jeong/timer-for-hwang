@@ -1,0 +1,75 @@
+// ─────────────────────────────────────────────
+//  화면 사이에 겹치는 스타일 조각
+//  mixin만 둔다(CSS를 직접 내보내지 않는다). 각 컴포넌트의 scoped 블록 안에서
+//  @include해서 선택자·명시도·선언 순서가 원래와 같게 펼쳐지게 한다.
+// ─────────────────────────────────────────────
+
+// 화면 틀. $nav가 true면 하단 메뉴 위까지만 차지한다.
+@mixin view($nav: false) {
+  position: absolute;
+  @if $nav {
+    inset: 0 0 calc(10cqh + env(safe-area-inset-bottom, 0px)) 0;
+  } @else {
+    inset: 0;
+  }
+  display: flex;
+  flex-direction: column;
+}
+
+// 목록·설정 화면의 머리글
+@mixin vhead {
+  padding: calc(4.5cqh + env(safe-area-inset-top, 0px)) 5cqw 3cqh;
+  display: flex;
+  flex-direction: column;
+  gap: 1cqh;
+  h2 {
+    margin: 0;
+    font-size: 10cqw;
+    font-weight: 700;
+    letter-spacing: -.04em;
+    line-height: 1;
+  }
+}
+
+// 작은 영문 라벨
+@mixin label-en($color, $size: 2.8cqw) {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: $size;
+  letter-spacing: var(--tr-widest);
+  color: $color;
+}
+
+// 세로로 넘기는 본문
+@mixin scroll($pad-bottom, $gap: null) {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 5cqw $pad-bottom;
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+// 시작 전·편집 화면 위쪽 막대
+@mixin bar {
+  padding: calc(3.5cqh + env(safe-area-inset-top, 0px)) 3cqw 1cqh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2cqw;
+  button {
+    background: none;
+    border: 0;
+    font-size: 4.2cqw;
+    font-weight: 700;
+    padding: 2cqw 2.5cqw;
+    color: var(--c-muted);
+  }
+}
+
+// Stepper 묶음
+@mixin steppers {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--c-line-2);
+}

@@ -9,13 +9,20 @@
   src: url('../assets/fonts/TtaengNum.woff2') format('woff2');
 }
 
-// 영문 라벨과 한글용 SUIT 가변 글꼴.
+// 영문 라벨·한글용 글꼴. SUIT 가변 글꼴을 굵기 400, 700으로 고정한 파생 글꼴(scripts/make-kr-font.py).
+// SUIT도 OFL의 예약 글꼴 이름(RFN)이 있어 이름을 TtaengKr로 바꿨다.
 @font-face {
-  font-family: SUIT;
-  font-weight: 100 900;
+  font-family: TtaengKr;
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src:
-    url('../assets/fonts/SUIT-Variable.woff2') format('woff2-variations'),
-    url('../assets/fonts/SUIT-Variable.woff2') format('woff2');
+  src: url('../assets/fonts/TtaengKr-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: TtaengKr;
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('../assets/fonts/TtaengKr-Bold.woff2') format('woff2');
 }

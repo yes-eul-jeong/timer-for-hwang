@@ -7,25 +7,4 @@ const store = useAppStore()
   <div class="toast" :class="{ on: store.state.toast }" role="status" aria-live="polite">{{ store.state.toast }}</div>
 </template>
 
-<style scoped lang="scss">
-.toast {
-  position: absolute;
-  left: 5cqw;
-  right: 5cqw;
-  bottom: calc(10cqh + env(safe-area-inset-bottom, 0px) + 2cqh);
-  z-index: 30;
-  background: var(--c-fg);
-  color: var(--c-bg);
-  padding: 3cqw 4cqw;
-  font-size: 3.6cqw;
-  font-weight: 700;
-  opacity: 0;
-  transform: translateY(1cqh);
-  transition: opacity var(--d-fast), transform var(--d-fast);
-  pointer-events: none;
-  &.on {
-    opacity: 1;
-    transform: none;
-  }
-}
-</style>
+<style scoped lang="scss" src="./AppToast.scss"></style>

@@ -3,7 +3,7 @@ import { reactive, ref, computed, onUnmounted } from 'vue'
 import { useAppStore } from '../app/store'
 import { TIMER_FIELDS, stepValue } from '../core/limits'
 import { formatSeconds, defaultName } from '../core/format'
-import type { TimerConfig } from '../core/types'
+import { toConfig, type TimerConfig } from '../core/types'
 import Stepper from '../components/Stepper.vue'
 
 const store = useAppStore()
@@ -12,15 +12,7 @@ const existing = editingId ? store.state.timers.find((x) => x.id === editingId) 
 
 const draft = reactive<TimerConfig>(
   existing
-    ? {
-        name: existing.name,
-        prepare: existing.prepare,
-        work: existing.work,
-        rest: existing.rest,
-        sets: existing.sets,
-        rounds: existing.rounds,
-        roundRest: existing.roundRest,
-      }
+    ? toConfig(existing)
     : { name: '', prepare: 10, work: 20, rest: 10, sets: 8, rounds: 1, roundRest: 0 },
 )
 const isEdit = computed(() => !!existing)
@@ -79,82 +71,4 @@ function remove() {
   </section>
 </template>
 
-<style scoped lang="scss">
-.view {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-}
-.bar {
-  padding: calc(3.5cqh + env(safe-area-inset-top, 0px)) 3cqw 1cqh;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2cqw;
-  button {
-    background: none;
-    border: 0;
-    border-radius: 0;
-    font-size: 4.2cqw;
-    font-weight: 700;
-    padding: 2cqw 2.5cqw;
-    color: var(--c-muted);
-    &.go {
-      color: var(--c-accent);
-    }
-  }
-  span {
-    font-weight: 700;
-    font-size: 4.4cqw;
-  }
-}
-.scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 5cqw calc(4cqh + env(safe-area-inset-bottom, 0px));
-  display: flex;
-  flex-direction: column;
-  gap: 2cqw;
-}
-.label-en {
-  font-family: var(--font-num);
-  font-weight: 700;
-  font-size: 2.8cqw;
-  letter-spacing: var(--tr-widest);
-  color: var(--c-muted);
-}
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 1cqh;
-  padding-bottom: 2cqh;
-  input {
-    font: inherit;
-    font-size: 5.4cqw;
-    font-weight: 700;
-    color: var(--c-fg);
-    background: var(--c-surface);
-    border: 1px solid var(--c-line-2);
-    border-radius: 0;
-    padding: 3cqw;
-    width: 100%;
-    box-sizing: border-box;
-  }
-}
-.steppers {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--c-line-2);
-}
-.danger {
-  margin-top: 3cqh;
-  min-height: 10cqh;
-  background: none;
-  border: 1px solid var(--c-line-2);
-  border-radius: 0;
-  color: var(--c-muted);
-  font-size: 4.4cqw;
-  font-weight: 700;
-}
-</style>
+<style scoped lang="scss" src="./EditView.scss"></style>
