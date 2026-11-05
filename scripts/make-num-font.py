@@ -1,12 +1,13 @@
 """실행 화면 숫자용 장체 글꼴을 만든다.
 
 Pretendard SemiBold(600)에서 숫자와 시간 표기에 쓰는 글자만 남기고,
-모든 글자를 가로 60%로 좁힌다. 느좋체와 같은 방식이다.
+모든 글자를 가로 65%로 좁힌다. 느좋체와 같은 방식이다.
 Pretendard는 Reserved Font Name이 있는 OFL이라 수정본은 다른 이름(TtaengNum)을 쓴다.
 
-사용법 (fonttools, brotli 필요):
-  python3 scripts/make-num-font.py <Pretendard-SemiBold.otf> src/assets/fonts/TtaengNum.woff2
-Pretendard-SemiBold.otf는 node_modules/pretendard/dist/public/static/ 에 있다.
+사용법 (저장소 루트에서, 호스트에 node_modules가 없어 named volume을 읽기 전용으로 붙인다):
+  docker run --rm -v "$PWD":/w -v ttaeng_node_modules:/nm:ro -w /w python:3.12-slim sh -c \
+    "pip install -q fonttools brotli && python scripts/make-num-font.py \
+    /nm/pretendard/dist/public/static/Pretendard-SemiBold.otf src/assets/fonts/TtaengNum.woff2"
 """
 import sys
 
@@ -15,7 +16,7 @@ from fontTools.pens.t2CharStringPen import T2CharStringPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
 
-SCALE_X = 0.6
+SCALE_X = 0.65
 TEXT = "0123456789:/.- "
 FAMILY = "TtaengNum"
 

@@ -7,10 +7,11 @@
 .run {
   user-select: none;
   -webkit-user-select: none;
-  --band: 12cqh;
+  --band: 8cqh;
   --k: 1.25;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
+  --bandpad: calc(var(--safe-b) * .5);
   --pbg: var(--c-surface-2);
   --pink: var(--c-fg);
   --pnum: var(--c-accent);
@@ -34,10 +35,10 @@
   left: 0;
   right: 0;
   top: 0;
-  bottom: calc(var(--band) + var(--safe-b));
-  padding: calc(2cqh + var(--safe-t)) 6cqw 2.6cqh;
+  bottom: calc(var(--band) + var(--bandpad));
+  padding: calc(2cqh + var(--safe-t)) 6cqw 2.4cqh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
   gap: 1.6cqh;
   background: var(--pbg);
   color: var(--pink);
@@ -45,7 +46,8 @@
 .rtop {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  min-height: 11.5cqw;
   gap: 4cqw;
 }
 .rphase {
@@ -57,31 +59,32 @@
     @include ui.label-en(var(--psub));
   }
 }
-.pz {
+.tools {
+  display: flex;
+  gap: 2.6cqw;
   flex: none;
-  height: 12.5cqw;
-  padding: 0 4.2cqw 0 3.6cqw;
-  display: inline-flex;
-  align-items: center;
-  gap: 2.2cqw;
+}
+// 위 작은 버튼과 재생 버튼. 보이는 글자 없이 채운 정사각형, 모서리 0.
+.tb,
+.play {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: var(--pink);
   color: var(--pbg);
-  border: 2px solid var(--pink);
-  font-weight: 700;
-  font-size: 4.4cqw;
-  letter-spacing: -.02em;
-  .ico {
-    display: inline-flex;
-    gap: 1cqw;
-    height: 3.8cqw;
-    &::before,
-    &::after {
-      content: '';
-      width: 1.1cqw;
-      background: currentColor;
-    }
-  }
   &:active { transform: translateY(1px); }
+}
+.tb {
+  width: 11cqw;
+  height: 11cqw;
+  svg { width: 5cqw; height: 5cqw; }
+}
+.play {
+  width: 18cqw;
+  height: 18cqw;
+  svg { width: 8cqw; height: 8cqw; }
 }
 .rphase strong {
   font-weight: 700;
@@ -89,12 +92,27 @@
   line-height: 1;
   letter-spacing: var(--tr-snug);
 }
+.numwrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+.chip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  @include ui.label-en(var(--pbg), 4.4cqw);
+  padding: 1.8cqw 3cqw 1.8cqw 4cqw;
+  background: var(--pink);
+}
 .rnum {
   align-self: center;
   justify-self: center;
   font-family: var(--font-num);
   font-weight: 700;
-  font-size: calc(min(86cqw, 42cqh) * var(--k));
+  font-size: calc(min(86cqw, 38cqh) * var(--k));
   line-height: 1;
   --ls: var(--tr-tight);
   letter-spacing: var(--ls);
@@ -103,17 +121,43 @@
   font-variant-numeric: tabular-nums;
   color: var(--pnum);
   white-space: nowrap;
-  &.long { font-size: calc(min(54cqw, 26cqh) * var(--k)); }
-  &.xlong { font-size: calc(min(43cqw, 21cqh) * var(--k)); }
+  transition: opacity var(--d-fast);
+  &.long { font-size: calc(min(50cqw, 30cqh) * var(--k)); }
+  &.xlong { font-size: calc(min(39cqw, 24cqh) * var(--k)); }
   &.ttaeng {
     font-family: var(--font-kr);
     font-size: 62cqw;
     --ls: -.06em;
   }
 }
-.rstats {
+.paused .rnum { opacity: .32; }
+.total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .6cqh;
+  span {
+    font-weight: 700;
+    font-size: 3.2cqw;
+    white-space: nowrap;
+    color: var(--psub);
+  }
+  b {
+    font-family: var(--font-num);
+    font-weight: 700;
+    font-size: 10cqw;
+    line-height: 1;
+    --ls: var(--tr-tight);
+    letter-spacing: var(--ls);
+    padding-right: calc(var(--ls) * -1);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+.srow {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.15fr;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
   gap: 3cqw;
   border-top: 1px solid color-mix(in srgb, var(--pink) 18%, transparent);
   padding-top: 1.8cqh;
@@ -145,15 +189,16 @@
     margin-left: 1cqw;
     letter-spacing: 0;
   }
-  &.tot { text-align: right; }
+  // 끝 화면에서 .play가 빠져도 오른쪽 칸에 남는다
+  &.rt { text-align: right; grid-column: 3; }
 }
 .rnext {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(var(--band) + var(--safe-b));
-  padding: 0 6cqw var(--safe-b);
+  height: calc(var(--band) + var(--bandpad));
+  padding: 0 6cqw var(--bandpad);
   display: flex;
   align-items: center;
   gap: 3cqw;
@@ -193,8 +238,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(var(--band) + var(--safe-b));
-  padding-bottom: var(--safe-b);
+  height: calc(var(--band) + var(--bandpad));
+  padding-bottom: var(--bandpad);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -230,48 +275,4 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .flash { animation-duration: calc(var(--d-base) * 2); }
-}
-.pause {
-  position: absolute;
-  inset: 0;
-  z-index: 6;
-  background: var(--c-scrim);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6cqh;
-  padding-bottom: var(--safe-b);
-  em {
-    font-style: normal;
-    font-family: var(--font-num);
-    font-weight: 700;
-    font-size: 15cqw;
-    line-height: 1;
-    letter-spacing: .02em;
-    color: var(--c-accent);
-  }
-  .row {
-    display: flex;
-    flex-direction: column;
-    gap: 2cqh;
-    width: 86cqw;
-  }
-  button {
-    font-size: 6.2cqw;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    min-height: 11cqh;
-    background: var(--c-surface-2);
-    color: var(--c-fg);
-    border: 1px solid var(--c-line-2);
-  }
-  .go {
-    background: var(--c-accent);
-    color: var(--c-on-accent);
-    border-color: var(--c-accent);
-    min-height: 14cqh;
-    font-size: 7.4cqw;
-  }
-  .end { color: var(--c-muted); }
 }
