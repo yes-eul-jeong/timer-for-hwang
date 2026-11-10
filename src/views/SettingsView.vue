@@ -140,7 +140,10 @@ async function doImport(mode: 'replace' | 'merge'): Promise<void> {
           <button class="btn-wide" type="button" @click="doPick">백업 불러오기</button>
         </template>
       </div>
-      <div class="group"><p>땡 v{{ appVersion }} · 데이터는 이 휴대폰에만 저장됩니다.</p></div>
+      <div class="group">
+        <p class="credit"><span>Supported by</span> 황승하</p>
+        <p>땡 v{{ appVersion }} · 데이터는 이 휴대폰에만 저장됩니다.</p>
+      </div>
     </div>
   </section>
 </template>

@@ -200,4 +200,13 @@ describe('설정', () => {
     const w = mount(SettingsView)
     expect(w.text()).toContain(`땡 v${__APP_VERSION__} · 데이터는 이 휴대폰에만 저장됩니다.`)
   })
+  test('맨 아래 지원 문구', () => {
+    const w = mount(SettingsView)
+    const credit = w.find('.credit')
+    expect(credit.text()).toBe('Supported by 황승하')
+    // 버전 줄 바로 위, 마지막 그룹 안에 둔다
+    const last = w.findAll('.group').at(-1)!
+    expect(last.find('.credit').exists()).toBe(true)
+    expect(last.text().indexOf('Supported by')).toBeLessThan(last.text().indexOf('땡 v'))
+  })
 })

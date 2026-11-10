@@ -21,6 +21,19 @@
     color: var(--c-muted);
   }
 }
+// 지원 문구: 영문 라벨처럼 작게, 이름만 한글 굵게. `.group p`보다 우선하도록 .group 아래로 쓴다
+.group .credit {
+  font-weight: 700;
+  color: var(--c-fg);
+  span {
+    font-family: var(--font-num);
+    font-size: 2.8cqw;
+    letter-spacing: var(--tr-widest);
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-right: 1.2cqw;
+  }
+}
 .warn p,
 .nudge {
   color: var(--c-accent);
