@@ -31,7 +31,7 @@ describe('parseBackup', () => {
     expect(parseBackup('nope')).toEqual({ ok: false, error: '백업 파일을 읽을 수 없어요' })
   })
   test('rejects other app', () => {
-    expect(parseBackup(raw({ app: 'x' }))).toEqual({ ok: false, error: '땡 백업 파일이 아니에요' })
+    expect(parseBackup(raw({ app: 'x' }))).toEqual({ ok: false, error: 'H.timer 백업 파일이 아니에요' })
   })
   test('rejects newer version', () => {
     expect(parseBackup(raw({ version: 2 }))).toEqual({ ok: false, error: '더 새 버전 앱에서 만든 백업이에요' })

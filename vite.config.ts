@@ -15,9 +15,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png'],
+      // 아이콘은 scripts/make-icons.py, scripts/make-icons.mjs로 만든다
       manifest: {
-        name: '땡',
-        short_name: '땡',
+        name: 'H.timer',
+        short_name: 'H.timer',
         description: '체육관 바닥에 두고 보는 인터벌 타이머',
         lang: 'ko',
         start_url: base,

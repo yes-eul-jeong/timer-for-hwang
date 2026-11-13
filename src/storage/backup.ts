@@ -39,7 +39,7 @@ export function parseBackup(text: string): ParseResult {
   }
   if (typeof o !== 'object' || o === null) return { ok: false, error: '백업 파일을 읽을 수 없어요' }
   const r = o as Record<string, unknown>
-  if (r.app !== 'ttaeng') return { ok: false, error: '땡 백업 파일이 아니에요' }
+  if (r.app !== 'ttaeng') return { ok: false, error: 'H.timer 백업 파일이 아니에요' }
   if (typeof r.version !== 'number' || !Number.isInteger(r.version) || r.version < 1) {
     return { ok: false, error: '백업 파일을 읽을 수 없어요' }
   }
